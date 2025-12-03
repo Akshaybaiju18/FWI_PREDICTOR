@@ -22,7 +22,7 @@ FEATURE_COLS = [
 
 # Thresholds for fire risk categories (Fire Weather Index values)
 HIGH_RISK_THRESHOLD = 12.0     # 🚨 High Chance of Fire
-MODERATE_RISK_THRESHOLD = 6.0  # ⚠ Moderate risk (6–12). Below 6 → 🟢 Low risk.
+MODERATE_RISK_THRESHOLD = 6.0  
 
 
 # Load model (and scaler, even though the model was trained on raw features)
