@@ -20,8 +20,9 @@ FEATURE_COLS = [
     "dmc", "ffmc", "dc", "isi",
 ]
 
-# Threshold for "high fire risk" warning
-FIRE_WARNING_THRESHOLD = 20.0
+# Thresholds for fire risk categories (Fire Weather Index values)
+HIGH_RISK_THRESHOLD = 12.0     # 🚨 High Chance of Fire
+MODERATE_RISK_THRESHOLD = 6.0  # ⚠ Moderate risk (6–12). Below 6 → 🟢 Low risk.
 
 
 # Load model (and scaler, even though the model was trained on raw features)
@@ -58,23 +59,31 @@ def predict():
         # not scaled ones. To keep predictions consistent with training, we pass
         # raw features to the model. scaler.pkl is loaded but not applied here.
         predicted_fwi = float(ridge_model.predict(input_df)[0])
-
-        is_high_risk = predicted_fwi >= FIRE_WARNING_THRESHOLD
+        
+        # Determine risk category based on FWI
+        if predicted_fwi >= HIGH_RISK_THRESHOLD:
+            risk_level = "high"
+        elif predicted_fwi >= MODERATE_RISK_THRESHOLD:
+            risk_level = "moderate"
+        else:
+            risk_level = "low"
 
         return render_template(
             "home.html",
             predicted_fwi=round(predicted_fwi, 3),
             raw_fwi=predicted_fwi,
-            is_high_risk=is_high_risk,
-            threshold=FIRE_WARNING_THRESHOLD,
+            risk_level=risk_level,
+            high_threshold=HIGH_RISK_THRESHOLD,
+            moderate_threshold=MODERATE_RISK_THRESHOLD,
         )
     except Exception as e:
         return render_template(
             "home.html",
             predicted_fwi=None,
             raw_fwi=None,
-            is_high_risk=False,
-            threshold=FIRE_WARNING_THRESHOLD,
+            risk_level=None,
+            high_threshold=HIGH_RISK_THRESHOLD,
+            moderate_threshold=MODERATE_RISK_THRESHOLD,
             error=str(e),
         )
 
